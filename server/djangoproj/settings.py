@@ -10,17 +10,19 @@ SECRET_KEY = 'django-insecure-ccow$tz_=9%dxu4(0%^(z%nx32#s@(zt9$ih@)5l54yny)wm-0
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# --- FIX START: Security Origins for Cloud IDE ---
+# --- FIX: Trusting Cloud IDE Origins ---
 ALLOWED_HOSTS = [
-    'augustraphae-8000.theianext-1-labs-prod-misc-tools-us-east-0.proxy.cognitiveclass.ai',
     'localhost',
-    '127.0.0.1'
+    '127.0.0.1',
+    '.proxy.cognitiveclass.ai',
+    '.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai'
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://augustraphae-8000.theianext-1-labs-prod-misc-tools-us-east-0.proxy.cognitiveclass.ai'
+    'https://*.proxy.cognitiveclass.ai',
+    'https://*.cognitiveclass.ai'
 ]
-# --- FIX END ---
+# --- END FIX ---
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [],
@@ -98,7 +100,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-# UPDATED: Added directories for React build files
+# Directories for React build files
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'frontend/static'),
     os.path.join(BASE_DIR, 'frontend/build'),
