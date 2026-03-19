@@ -13,7 +13,7 @@ jobs:
 
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -27,8 +27,9 @@ jobs:
 
     - name: Run Linter
       run: |
-        # This excludes the node_modules folder from the Python linting check
-        find . -path "*/node_modules/*" -prune -o -name "*.py" -exec flake8 {} +
+        # This excludes node_modules so flake8 doesn't get confused
+        flake8 . --count --exclude=node_modules --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 . --count --exclude=node_modules --max-complexity=10 --max-line-length=79 --statistics
         echo "Linted all the python files successfully"
 
   lint_js:
@@ -37,19 +38,18 @@ jobs:
 
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Install Node.js
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
-        node-version: 18
+        node-version: 20
 
     - name: Install JSHint
       run: npm install jshint --global
 
     - name: Run Linter
       run: |
-        # This tells the linter to ONLY look at the .js files in your database folder
-        # and ignore the deep library folders that caused the failures
+        # Target ONLY your files; ignore everything in node_modules
         jshint ./server/database/*.js
         echo "Linted all the js files successfully"
