@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const fs = require('fs');
 const cors = require('cors');
 const app = express();
-const port = 3030;
+const port = 3031;
 
 app.use(cors());
 app.use(require('body-parser').urlencoded({ extended: false }));
@@ -13,7 +13,8 @@ app.use(require('body-parser').urlencoded({ extended: false }));
 const reviews_data = JSON.parse(fs.readFileSync("data/reviews.json", 'utf8'));
 const dealerships_data = JSON.parse(fs.readFileSync("data/dealerships.json", 'utf8'));
 
-mongoose.connect('mongodb://mongo_db:27017/', { 'dbName': 'dealershipsDB' });
+// Updated to localhost:27018 to match your running mongod process
+mongoose.connect('mongodb://localhost:27018/', { 'dbName': 'dealershipsDB' });
 
 const Reviews = require('./review');
 const Dealerships = require('./dealership');
