@@ -2,47 +2,52 @@ import requests
 import os
 from dotenv import load_dotenv
 
-load_dotenv()
-
-backend_url = os.getenv(
-    'backend_url', default="http://localhost:3030")
-sentiment_url = os.getenv(
-    'sentiment_url', default="http://localhost:5000/")
+# We are hardcoding these to ensure the .env file doesn't override them with port 3030
+backend_url = "http://127.0.0.1:3031"
+sentiment_url = "http://127.0.0.1:5000"
 
 def get_request(endpoint, **kwargs):
     params = ""
     if (kwargs):
         for key, value in kwargs.items():
-            params = params + key + "=" + value + "&"
+            params = params + key + "=" + str(value) + "&"
+
+    # Fix potential slash issues
+    if not endpoint.startswith('/'):
+        endpoint = '/' + endpoint
 
     request_url = backend_url + endpoint + "?" + params
 
-    print("GET from {} ".format(request_url))
+    print(f"DEBUG: Attempting to GET from {request_url}")
+    
     try:
-        # Call get method of requests library with URL and parameters
         response = requests.get(request_url)
-        return response.json()
+        if response.status_code == 200:
+            return response.json()
+        else:
+            print(f"DEBUG: Server returned status {response.status_code}")
+            return None
     except Exception as err:
-        # If any error occurs
-        print(f"Unexpected {err=}, {type(err)=}")
-        print("Network exception occurred")
+        print(f"DEBUG: Network error: {err}")
+        return None
 
 def analyze_review_sentiments(text):
-    request_url = sentiment_url + "analyze/" + text
+    request_url = f"{sentiment_url}/analyze/{text}"
     try:
-        # Call get method of requests library with URL
         response = requests.get(request_url)
-        return response.json()
+        if response.status_code == 200:
+            return response.json()
+        else:
+            return {"sentiment": "neutral"}
     except Exception as err:
-        print(f"Unexpected {err=}, {type(err)=}")
-        print("Network exception occurred")
+        print(f"DEBUG: Sentiment error: {err}")
+        return {"sentiment": "neutral"}
 
 def post_review(data_dict):
     request_url = backend_url + "/insert_review"
     try:
         response = requests.post(request_url, json=data_dict)
-        print(response.json())
         return response.json()
     except Exception as err:
-        print(f"Unexpected {err=}, {type(err)=}")
-        print("Network exception occurred")
+        print(f"DEBUG: Post error: {err}")
+        return None
